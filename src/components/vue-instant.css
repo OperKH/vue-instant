@@ -87,7 +87,7 @@
   color: #AAAAAA;
 }
 
-.sfx-searchbox__suggestions {
+.sbx-searchbox__suggestions {
      position: absolute;
      left: 0;
      top: 110%;
@@ -105,7 +105,7 @@
      margin-top:3px;
  }
 
- .sfx-searchbox__suggestions li {
+ .sbx-searchbox__suggestions li {
      list-style: none;
      line-height: 36px;
      padding: 0 10px;
@@ -118,11 +118,11 @@
      text-overflow: ellipsis;
  }
 
- .sfx-searchbox__suggestion--highlighted {
+ .sbx-searchbox__suggestion--highlighted {
      background-color: #3e5da0;
      color: #fff;
  }
 
- .sfx-searchbox__append {
+ .sbx-searchbox__append {
    border: 0px !important;
  }

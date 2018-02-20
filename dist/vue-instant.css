@@ -74,7 +74,7 @@
 .sbx-searchbox__input::placeholder {
   color: #AAAAAA;
 }
-.sfx-searchbox__suggestions {
+.sbx-searchbox__suggestions {
      position: absolute;
      left: 0;
      top: 110%;
@@ -91,7 +91,7 @@
      box-shadow: 0 0 6px 0 rgba(0,0,0,.04), 0 2px 4px 0 rgba(0,0,0,.12);
      margin-top:3px;
 }
-.sfx-searchbox__suggestions li {
+.sbx-searchbox__suggestions li {
      list-style: none;
      line-height: 36px;
      padding: 0 10px;
@@ -103,10 +103,10 @@
      overflow: hidden;
      text-overflow: ellipsis;
 }
-.sfx-searchbox__suggestion--highlighted {
+.sbx-searchbox__suggestion--highlighted {
      background-color: #3e5da0;
      color: #fff;
 }
-.sfx-searchbox__append {
+.sbx-searchbox__append {
    border: 0px !important;
 }
