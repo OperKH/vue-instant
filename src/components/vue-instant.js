@@ -186,14 +186,8 @@ export default {
       setBlur () {
         this.$el.blur()
       },
-      getType () {
-        return this.types.find(this.isSameType)
-      },
-      getClassHighlighted (index) {
-        if (this.highlightedIndex === index) {
-          var type = this.getType()
-          return type.highlighClass
-        }
+      isHighlighted (index) {
+        return this.highlightedIndex === index
       },
       letterProcess (o) {
         var remoteText = o[this.suggestionAttribute].split('')

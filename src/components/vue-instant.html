@@ -4,7 +4,7 @@
         <input type="text" class="sbx-searchbox__input" :disabled="disabled" @click="emitClickInput" @keyup='changeText' v-model='textVal' :name="name" placeholder="" autocomplete="off" required="required" :autofocus="autofocus">
         <div v-if="modeIsFull" class="sbx-searchbox__append">
             <ul v-on-clickaway="away" v-if="suggestionsIsVisible && showSuggestions" class="sbx-searchbox__suggestions">
-                <li class="sbx-searchbox__suggestion--highlighted" @click="selectedAction(index)" v-for="(item, index) in similiarData">{{item[suggestionAttribute]}}</li>
+                <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" @click="selectedAction(index)" v-for="(item, index) in similiarData">{{item[suggestionAttribute]}}</li>
             </ul>
         </div>
     </div>
