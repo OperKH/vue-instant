@@ -1,4 +1,3 @@
-
 .sbx-searchbox {
   display: inline-block;
   position: relative;
@@ -8,10 +7,12 @@
   box-sizing: border-box;
   font-size: 13px;
 }
+
 .sbx-searchbox__wrapper {
   width: 100%;
   height: 100%;
 }
+
 .sbx-searchbox__input {
   position: absolute !important;
   left:0 !important;
@@ -34,6 +35,7 @@
      -moz-appearance: none;
           appearance: none;
 }
+
 .sbx-searchbox__input-placeholder {
   -webkit-transition: box-shadow .4s ease, background .4s ease;
   transition: box-shadow .4s ease, background .4s ease;
@@ -51,29 +53,40 @@
      -moz-appearance: none;
           appearance: none;
 }
+
+
+
+
 .sbx-searchbox__input::-webkit-search-decoration, .sbx-searchbox__input::-webkit-search-cancel-button, .sbx-searchbox__input::-webkit-search-results-button, .sbx-searchbox__input::-webkit-search-results-decoration {
   display: none;
 }
+
 .sbx-searchbox__input:hover {
   box-shadow: inset 0 0 0 0px #b3b3b3;
 }
+
 .sbx-searchbox__input:focus, .sbx-searchbox__input:active {
   outline: 0;
   box-shadow: inset 0 0 0 0px #3E82F7;
   background: rgba(255, 255, 255, 0)
 }
+
 .sbx-searchbox__input::-webkit-input-placeholder {
   color: #AAAAAA;
 }
+
 .sbx-searchbox__input::-moz-placeholder {
   color: #AAAAAA;
 }
+
 .sbx-searchbox__input:-ms-input-placeholder {
   color: #AAAAAA;
 }
+
 .sbx-searchbox__input::placeholder {
   color: #AAAAAA;
 }
+
 .sfx-searchbox__suggestions {
      position: absolute;
      left: 0;
@@ -90,8 +103,9 @@
      overflow: auto;
      box-shadow: 0 0 6px 0 rgba(0,0,0,.04), 0 2px 4px 0 rgba(0,0,0,.12);
      margin-top:3px;
-}
-.sfx-searchbox__suggestions li {
+ }
+
+ .sfx-searchbox__suggestions li {
      list-style: none;
      line-height: 36px;
      padding: 0 10px;
@@ -102,11 +116,13 @@
      white-space: nowrap;
      overflow: hidden;
      text-overflow: ellipsis;
-}
-.sfx-searchbox__suggestion--highlighted {
+ }
+
+ .sfx-searchbox__suggestion--highlighted {
      background-color: #3e5da0;
      color: #fff;
-}
-.sfx-searchbox__append {
+ }
+
+ .sfx-searchbox__append {
    border: 0px !important;
-}
+ }

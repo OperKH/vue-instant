@@ -1,0 +1,11 @@
+<div class="sfx-searchbox">
+    <div class="sfx-searchbox__wrapper">
+        <input type="text" class="sbx-searchbox__input-placeholder" name="search" :placeholder="getPlaceholder" autocomplete="off" required="required" tabindex="-1">
+        <input type="text" class="sbx-searchbox__input" :disabled="disabled" @click="emitClickInput" @keyup='changeText' v-model='textVal' :name="name" placeholder="" autocomplete="off" required="required" :autofocus="autofocus">
+        <div v-if="modeIsFull" class="sfx-searchbox__append">
+            <ul v-on-clickaway="away" v-if="suggestionsIsVisible && showSuggestions" class="sfx-searchbox__suggestions">
+                <li class="sfx-searchbox__suggestion--highlighted" @click="selectedAction(index)" v-for="(item, index) in similiarData">{{item[suggestionAttribute]}}</li>
+            </ul>
+        </div>
+    </div>
+</div>
