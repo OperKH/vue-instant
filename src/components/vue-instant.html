@@ -6,6 +6,7 @@
         required="required" 
         tabindex="-1"
     >
+    <span :class="{'show': isLoading, 'sbx-searchbox__spinner': true}"></span>
     <input type="text" class="sbx-searchbox__input" 
         v-model="textVal"
         placeholder="" 

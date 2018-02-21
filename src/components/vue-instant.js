@@ -8,7 +8,7 @@ export default {
         required: true
       },
       'suggestions': {
-        type: Array,
+        type: [Array, Promise],
         required: true
       },
       'suggestionAttribute': {
@@ -56,10 +56,12 @@ export default {
         selectedEvent: null,
         selectedSuggest: null,
         inputChanged: false,
+        isSuggestionAsync: false,
         suggestionsIsVisible: true,
         highlightedIndex: 0,
         similiarData: [],
-        placeholderVal: this.placeholder
+        placeholderVal: this.placeholder,
+        isLoading: false
       }
     },
     watch: {
@@ -69,6 +71,7 @@ export default {
         }
       },
       suggestions: function (val) {
+        this.handleNewSuggestion(val)
         this.findSuggests()
         this.onExact()
       }
@@ -85,6 +88,7 @@ export default {
     },
     created () {
       this.textVal = this.value
+      this.handleNewSuggestion()
     },
     methods: {
       decrementHighlightedIndex () {
@@ -92,6 +96,13 @@ export default {
       },
       incrementHighlightedIndex () {
         this.highlightedIndex += 1
+      },
+      handleNewSuggestion (val = this.suggestions) {
+        this.isSuggestionAsync = Promise.resolve(val) == val
+        if (this.isSuggestionAsync) {
+          this.isLoading = true
+          val.then(results => this.isLoading = false)
+        }
       },
       escapeAction () {
         this.clearHighlightedIndex()
@@ -145,7 +156,7 @@ export default {
       },
       addToSimilarData (o) {
         if (this.canAddToSimilarData()) {
-          this.placeholderVal = this.letterProcess(o)
+          // this.placeholderVal = this.letterProcess(o)
           this.selectedSuggest = o
           // this.emitSelected()
           this.similiarData.unshift(o)
@@ -210,8 +221,19 @@ export default {
       },
       findSuggests () {
         if (this.suggestionsPropIsDefined()) {
+          if (this.isSuggestionAsync) {
+            return this.suggestions.then(results => {
+              results.forEach(this.addRegister)
+              this.setPlaceholderVal()
+            })
+          }
           this.suggestions.forEach(this.addRegister)
+          this.setPlaceholderVal()
         }
+      },
+      setPlaceholderVal () {
+          var suggest = this.similiarData[this.highlightedIndex]
+          if (suggest) this.placeholderVal = suggest[this.suggestionAttribute]
       },
       arrowDownValidation () {
         return this.highlightedIndex < (this.similiarData.length - 1)
