@@ -64,6 +64,9 @@ export default {
         if (this.textValIsEmpty()) {
           this.placeholderVal = val
         }
+      },
+      suggestions: function (val) {
+        this.clearAllAndFindSuggest()
       }
     },
     computed: {
