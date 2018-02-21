@@ -40,7 +40,11 @@ export default {
       },
       'suggestOnAllWords': {
         type: Boolean,
-	    default: false
+	      default: false
+      },
+      'selectOnExact': {
+        type: Boolean,
+	      default: true
       }
     },
     data () {
@@ -128,7 +132,7 @@ export default {
         this.setFinalTextValue()
         this.clearPlaceholder()
         this.clearSimilarData()
-        this.emitSelected()
+        // this.emitSelected()
       },
       addRegister (o) {
         if (this.isSimilar(o) && this.textValIsNotEmpty()) {
@@ -144,7 +148,7 @@ export default {
         if (this.canAddToSimilarData()) {
           this.placeholderVal = this.letterProcess(o)
           this.selectedSuggest = o
-          this.emitSelected()
+          // this.emitSelected()
           this.similiarData.unshift(o)
         }
       },
@@ -175,6 +179,18 @@ export default {
           this.textVal = suggest[this.suggestionAttribute]
           this.selectedSuggest = suggest
           this.emitSelected()
+        }
+      },
+      onExact () {
+        const values = this.similiarData.map(item => item[this.suggestionAttribute])
+        const index = values.findIndex(v => this.textVal === v)
+        if (index !== -1) {
+          this.highlightedIndex = index;
+          this.selectedSuggest = this.similiarData[index]
+          this.emitSelected()
+          if (this.similiarData.length <= 1) {
+            this.suggestionsIsVisible = false
+          }
         }
       },
       setInitialPlaceholder () {
@@ -228,32 +244,30 @@ export default {
       },
       isSimilar (o) {
           if (o) {
-	   if ( this.suggestOnAllWords ) {
-	      var isMatch = false;
-	      var words = o[this.suggestionAttribute].split(" ");
-	      var textValWords = this.textVal.split(" ");
-	      if ( words.length > 0) {
-		  words.forEach(function(word)  {
-		      if ( textValWords.length > 0) {
-			  textValWords.forEach(function(textValWord) {
-			      if (word.toLowerCase().startsWith(textValWord.toLowerCase())) {
-				  isMatch = true;
-			      }
-			  });
-		      }
-		      else if (word.toLowerCase().startsWith(this.textVal.toLowerCase())) {
-			  isMatch = true;
-		      }
-		  });
-		  return isMatch;
-	      } 
-	   }
+            if ( this.suggestOnAllWords ) {
+                var isMatch = false;
+                var words = o[this.suggestionAttribute].split(" ");
+                var textValWords = this.textVal.split(" ");
+                if ( words.length > 0) {
+                  words.forEach(function(word)  {
+                      if ( textValWords.length > 0) {
+                        textValWords.forEach(function(textValWord) {
+                            if (word.toLowerCase().startsWith(textValWord.toLowerCase())) {
+                              isMatch = true;
+                            }
+                        });
+                      }
+                      else if (word.toLowerCase().startsWith(this.textVal.toLowerCase())) {
+                        isMatch = true;
+                      }
+                  });
+                  return isMatch;
+                } 
+            }
 
            return o[this.suggestionAttribute]
         	  .toLowerCase()
-		  .startsWith(this.textVal.toLowerCase())		  
-
-
+		        .startsWith(this.textVal.toLowerCase())
         }
       },
       isSameType (o) {
@@ -330,6 +344,9 @@ export default {
           this.inputChanged = true
           this.suggestionsIsVisible = true
           this.clearAllAndFindSuggest()
+          if (this.selectOnExact) {
+            this.onExact()
+          }
         }
       },
       clearAllAndFindSuggest () {
@@ -340,7 +357,7 @@ export default {
       },
       away () {
         this.suggestionsIsVisible = false
-        this.emitSelected()
+        // this.emitSelected()
       },
       emitChange () {
         // this.$emit('input', this.textVal)
