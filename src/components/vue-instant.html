@@ -1,11 +1,28 @@
 <div class="sbx-searchbox">
-    <div class="sbx-searchbox__wrapper">
-        <input type="text" class="sbx-searchbox__input-placeholder" name="search" :placeholder="getPlaceholder" autocomplete="off" required="required" tabindex="-1">
-        <input type="text" class="sbx-searchbox__input" :disabled="disabled" @click="emitClickInput" @keyup='changeText' v-model='textVal' :name="name" placeholder="" autocomplete="off" required="required" :autofocus="autofocus">
-        <div v-if="modeIsFull" class="sbx-searchbox__append">
-            <ul v-on-clickaway="away" v-if="suggestionsIsVisible && showSuggestions" class="sbx-searchbox__suggestions">
-                <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" @click="selectedAction(index)" v-for="(item, index) in similiarData">{{item[suggestionAttribute]}}</li>
-            </ul>
-        </div>
-    </div>
+    <input type="text" class="sbx-searchbox__input-placeholder" 
+        :placeholder="getPlaceholder" 
+        name="search" 
+        autocomplete="off" 
+        required="required" 
+        tabindex="-1"
+    >
+    <input type="text" class="sbx-searchbox__input" 
+        v-model='textVal' 
+        placeholder="" 
+        autocomplete="off" 
+        required="required" 
+        :autofocus="autofocus"
+        :disabled="disabled" 
+        :name="name" 
+        @click="emitClickInput" 
+        @keyup='changeText' 
+    >
+    <ul v-on-clickaway="away" v-if="showSuggestions" class="sbx-searchbox__suggestions">
+            <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" 
+                @click="selectedAction(index)" 
+                v-for="(item, index) in similiarData"
+            >
+                {{item[suggestionAttribute]}}
+            </li>
+        </ul>
 </div>

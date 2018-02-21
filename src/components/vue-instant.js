@@ -68,11 +68,8 @@ export default {
           return this.placeholderVal
         }
       },
-      modeIsFull () {
-        return this.showAutocomplete
-      },
       showSuggestions () {
-        return this.similiarData.length >= this.minMatch
+        return this.showAutocomplete && this.suggestionsIsVisible && this.similiarData.length >= this.minMatch
       },
 
       textVal: {
