@@ -66,7 +66,8 @@ export default {
         }
       },
       suggestions: function (val) {
-        this.clearAllAndFindSuggest()
+        this.findSuggests()
+        this.onExact()
       }
     },
     computed: {
@@ -79,14 +80,17 @@ export default {
         return this.showAutocomplete && this.suggestionsIsVisible && this.similiarData.length >= this.minMatch
       },
 
-      textVal: {
-        get () {
-          return this.value
-        },
-        set (v) {
-          this.$emit('input', v)
-        }
-      }
+      // textVal: {
+      //   get () {
+      //     return this.value
+      //   },
+      //   set (v) {
+      //     if (v !== this.textVal) this.$emit('input', v)
+      //   }
+      // }
+    },
+    created () {
+      this.textVal = this.value
     },
     methods: {
       decrementHighlightedIndex () {
@@ -135,7 +139,7 @@ export default {
         this.setFinalTextValue()
         this.clearPlaceholder()
         this.clearSimilarData()
-        // this.emitSelected()
+        this.emitSelected()
       },
       addRegister (o) {
         if (this.isSimilar(o) && this.textValIsNotEmpty()) {
@@ -161,12 +165,6 @@ export default {
           this.emitChange()
         }
       },
-      setSelectedAsTextValue () {
-        this.textVal = this.selected
-      },
-      setInitialTextValue () {
-        this.textVal = this.value
-      },
       setFinalTextValue () {
         if (this.finalTextValueValidation()) {
           this.setPlaceholderAndTextVal()
@@ -190,11 +188,14 @@ export default {
         if (index !== -1) {
           this.highlightedIndex = index;
           this.selectedSuggest = this.similiarData[index]
+          this.clearPlaceholder()
           this.emitSelected()
           if (this.similiarData.length <= 1) {
             this.suggestionsIsVisible = false
           }
+          return true
         }
+        return false
       },
       setInitialPlaceholder () {
         this.placeholderVal = this.placeholder
@@ -339,17 +340,16 @@ export default {
       changeText (e) {
         this.selectedEvent = e.code
         this.setTextValue(e)
-        this.processChangeText()
+        this.processChangeText(e)
         this.controlEvents(e)
       },
       processChangeText (e) {
         if (this.notEnterKeyEvent()) {
+          if (this.selectOnExact && this.onExact()) return
+          this.$emit('input', this.textVal)
           this.inputChanged = true
           this.suggestionsIsVisible = true
           this.clearAllAndFindSuggest()
-          if (this.selectOnExact) {
-            this.onExact()
-          }
         }
       },
       clearAllAndFindSuggest () {
@@ -361,6 +361,10 @@ export default {
       away () {
         this.suggestionsIsVisible = false
         // this.emitSelected()
+      },
+      inputClick (e) {
+        this.suggestionsIsVisible = true
+        this.emitClickInput(e)
       },
       emitChange () {
         // this.$emit('input', this.textVal)

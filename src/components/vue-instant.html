@@ -1,5 +1,6 @@
 <div class="sbx-searchbox">
     <input type="text" class="sbx-searchbox__input-placeholder" 
+        ref="placeholder"
         :placeholder="getPlaceholder" 
         name="search" 
         autocomplete="off" 
@@ -7,14 +8,15 @@
         tabindex="-1"
     >
     <input type="text" class="sbx-searchbox__input" 
-        v-model='textVal' 
+        v-model="textVal"
+        ref="input"
         placeholder="" 
         autocomplete="off" 
         required="required" 
         :autofocus="autofocus"
         :disabled="disabled" 
         :name="name" 
-        @click="emitClickInput" 
+        @click="inputClick" 
         @keyup='changeText' 
     >
     <ul v-on-clickaway="away" v-if="showSuggestions" class="sbx-searchbox__suggestions">
