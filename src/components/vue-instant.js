@@ -45,6 +45,10 @@ export default {
       'selectOnExact': {
         type: Boolean,
 	      default: true
+      },
+      'maxLimit': {
+        type: Number,
+	      default: 0
       }
     },
     data () {
@@ -54,7 +58,6 @@ export default {
         inputChanged: false,
         suggestionsIsVisible: true,
         highlightedIndex: 0,
-        highlightedIndexMax: 7,
         similiarData: [],
         placeholderVal: this.placeholder
       }
@@ -78,16 +81,7 @@ export default {
       },
       showSuggestions () {
         return this.showAutocomplete && this.suggestionsIsVisible && this.similiarData.length >= this.minMatch
-      },
-
-      // textVal: {
-      //   get () {
-      //     return this.value
-      //   },
-      //   set (v) {
-      //     if (v !== this.textVal) this.$emit('input', v)
-      //   }
-      // }
+      }
     },
     created () {
       this.textVal = this.value
@@ -115,8 +109,6 @@ export default {
           this.incrementHighlightedIndex()
           this.setPlaceholderAndTextVal()
           this.emitKeyDown()
-        } else {
-          this.clearHighlightedIndex()
         }
       },
       arrowUpAction () {
@@ -222,8 +214,7 @@ export default {
         }
       },
       arrowDownValidation () {
-        return this.highlightedIndex < this.highlightedIndexMax &&
-               this.highlightedIndex < (this.similiarData.length - 1)
+        return this.highlightedIndex < (this.similiarData.length - 1)
       },
       lowerFirst (string) {
         return string.charAt(0).toLowerCase() + string.slice(1)
@@ -236,8 +227,7 @@ export default {
         }
       },
       findRepited (similarItem, o) {
-        return (similarItem[this.suggestionAttribute] ===
-        o[this.suggestionAttribute])
+        return (similarItem[this.suggestionAttribute] === o[this.suggestionAttribute])
       },
       findSuggestionTextIsRepited (o) {
         return this.similiarData.find(this.findRepited.bind(this, o))
@@ -281,7 +271,8 @@ export default {
         return typeof fnName === 'function'
       },
       canAddToSimilarData () {
-        return this.similiarData.length < this.highlightedIndexMax
+        if (this.maxLimit) return this.similiarData.length < this.maxLimit
+        return true
       },
       suggestionsPropIsDefined () {
         return typeof this.suggestions !== 'undefined'

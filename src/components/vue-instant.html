@@ -1,6 +1,5 @@
 <div class="sbx-searchbox">
     <input type="text" class="sbx-searchbox__input-placeholder" 
-        ref="placeholder"
         :placeholder="getPlaceholder" 
         name="search" 
         autocomplete="off" 
@@ -9,7 +8,6 @@
     >
     <input type="text" class="sbx-searchbox__input" 
         v-model="textVal"
-        ref="input"
         placeholder="" 
         autocomplete="off" 
         required="required" 
