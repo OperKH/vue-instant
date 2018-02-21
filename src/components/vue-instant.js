@@ -21,7 +21,7 @@ export default {
       },
       'minMatch': {
         type: Number,
-        default: 2
+        default: 1
       },
       'name': {
         type: String,
