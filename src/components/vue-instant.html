@@ -1,5 +1,5 @@
 <div class="sbx-searchbox">
-    <input type="text" class="sbx-searchbox__input-placeholder" 
+    <input type="text" v-if="showPlaceholder" class="sbx-searchbox__input-placeholder" 
         :placeholder="getPlaceholder" 
         name="search" 
         autocomplete="off" 

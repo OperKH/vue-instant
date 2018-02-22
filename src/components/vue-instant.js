@@ -38,6 +38,10 @@ export default {
         type: Boolean,
         default: true
       },
+      'showPlaceholder': {
+        type: Boolean,
+        default: true
+      },
       'suggestOnAllWords': {
         type: Boolean,
 	      default: false
@@ -72,8 +76,11 @@ export default {
       },
       suggestions: function (val) {
         this.handleNewSuggestion(val)
-        this.findSuggests()
-        this.onExact()
+        this.findSuggests().then(suggests => {
+          this.clearHighlightedIndex()
+          const isExact = this.onExact()
+          if (isExact === false && this.suggestOnAllWords === false) this.setPlaceholderVal()
+        })
       }
     },
     computed: {
@@ -156,7 +163,6 @@ export default {
       },
       addToSimilarData (o) {
         if (this.canAddToSimilarData()) {
-          // this.placeholderVal = this.letterProcess(o)
           this.selectedSuggest = o
           // this.emitSelected()
           this.similiarData.unshift(o)
@@ -177,10 +183,10 @@ export default {
         }
       },
       setPlaceholderAndTextVal () {
-        if (typeof this.similiarData[this.highlightedIndex] !== 'undefined') {
-          var suggest = this.similiarData[this.highlightedIndex]
-          this.placeholderVal = suggest[this.suggestionAttribute]
-          this.textVal = suggest[this.suggestionAttribute]
+        const suggest = this.getSuggest()
+        if (typeof suggest !== 'undefined') {
+          this.setTextVal()
+          this.setPlaceholderVal()
           this.selectedSuggest = suggest
           this.emitSelected()
         }
@@ -210,30 +216,42 @@ export default {
         return this.highlightedIndex === index
       },
       letterProcess (o) {
-        var remoteText = o[this.suggestionAttribute].split('')
+        var remoteText = o.split('')
         var inputText = this.textVal.split('')
-        inputText.forEach(function (letter, key) {
-          if (letter !== remoteText[key]) {
-            remoteText[key] = letter
-          }
+          inputText.forEach(function (letter, key) {
+            if (letter !== remoteText[key]) {
+              remoteText[key] = letter
+            }
         })
         return remoteText.join('')
       },
       findSuggests () {
-        if (this.suggestionsPropIsDefined()) {
-          if (this.isSuggestionAsync) {
-            return this.suggestions.then(results => {
-              results.forEach(this.addRegister)
-              this.setPlaceholderVal()
-            })
+        return new Promise ((resolve, reject) => {
+          if (this.suggestionsPropIsDefined()) {
+            if (this.isSuggestionAsync) {
+              this.suggestions.then(results => {
+                results.forEach(this.addRegister)
+                resolve(this.suggestions)
+              })
+            } else {
+              this.suggestions.forEach(this.addRegister)
+              resolve(this.suggestions)
+            }
+          } else {
+            reject()
           }
-          this.suggestions.forEach(this.addRegister)
-          this.setPlaceholderVal()
-        }
+        })
       },
       setPlaceholderVal () {
-          var suggest = this.similiarData[this.highlightedIndex]
-          if (suggest) this.placeholderVal = suggest[this.suggestionAttribute]
+          const suggest = this.getSuggest();
+          if (suggest) this.placeholderVal = this.letterProcess(suggest[this.suggestionAttribute])
+      },
+      setTextVal () {
+        const suggest = this.getSuggest();
+        this.textVal = suggest[this.suggestionAttribute]
+      },
+      getSuggest () {
+        return this.similiarData[this.highlightedIndex]
       },
       arrowDownValidation () {
         return this.highlightedIndex < (this.similiarData.length - 1)
