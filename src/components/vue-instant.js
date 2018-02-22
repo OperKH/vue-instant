@@ -108,7 +108,10 @@ export default {
         this.isSuggestionAsync = Promise.resolve(val) == val
         if (this.isSuggestionAsync) {
           this.isLoading = true
-          val.then(results => this.isLoading = false)
+          val.then(results => { 
+            this.isLoading = false 
+            return results
+          }).catch(e => this.isLoading = false)
         }
       },
       escapeAction () {
@@ -232,7 +235,7 @@ export default {
               this.suggestions.then(results => {
                 results.forEach(this.addRegister)
                 resolve(this.suggestions)
-              })
+              }).catch(e => [])
             } else {
               this.suggestions.forEach(this.addRegister)
               resolve(this.suggestions)
