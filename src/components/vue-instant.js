@@ -1,4 +1,7 @@
 import { mixin as clickaway } from 'vue-clickaway'
+import { isPromise, isArray, isFunction } from '../utils/objectUtils'
+import debounce from '../utils/debounce'
+
 export default {
     name: 'vueInstant',
     mixins: [ clickaway ],
@@ -8,12 +11,16 @@ export default {
         required: true
       },
       'suggestions': {
-        type: [Array, Promise],
+        type: [Array, Function],
         required: true
       },
       'suggestionAttribute': {
         type: String,
         required: true
+      },
+      debounce: {
+        type: Number,
+        default: 500
       },
       'placeholder': {
         type: String,
@@ -60,7 +67,7 @@ export default {
         selectedEvent: null,
         selectedSuggest: null,
         inputChanged: false,
-        isSuggestionAsync: false,
+        isSuggestionFn: false,
         suggestionsIsVisible: true,
         highlightedIndex: 0,
         similiarData: [],
@@ -76,11 +83,6 @@ export default {
       },
       suggestions: function (val) {
         this.handleNewSuggestion(val)
-        this.findSuggests().then(suggests => {
-          this.clearHighlightedIndex()
-          const isExact = this.onExact()
-          if (isExact === false && this.suggestOnAllWords === false) this.setPlaceholderVal()
-        })
       }
     },
     computed: {
@@ -111,14 +113,16 @@ export default {
         this.highlightedIndex += 1
       },
       handleNewSuggestion (val = this.suggestions) {
-        this.isSuggestionAsync = Promise.resolve(val) == val
-        if (this.isSuggestionAsync) {
-          this.isLoading = true
-          val.then(results => { 
-            this.isLoading = false 
-            return results
-          }).catch(e => this.isLoading = false)
+        this.isSuggestionFn = isFunction(val)
+        if (this.isSuggestionFn) {
+          this.getSuggestions = debounce(this.suggestions, this.debounce)
         }
+        this.findSuggests()
+      },
+      handleAsyncSuggestion () {
+        this.clearHighlightedIndex()
+        const isExact = this.onExact()
+        if (isExact === false && this.suggestOnAllWords === false) this.setPlaceholderVal()
       },
       escapeAction () {
         this.clearHighlightedIndex()
@@ -227,33 +231,46 @@ export default {
       letterProcess (o) {
         var remoteText = o.split('')
         var inputText = this.textVal.split('')
-          inputText.forEach(function (letter, key) {
-            if (letter !== remoteText[key]) {
-              remoteText[key] = letter
-            }
+        inputText.forEach(function (letter, key) {
+          if (letter !== remoteText[key]) {
+            remoteText[key] = letter
+          }
         })
         return remoteText.join('')
       },
       findSuggests () {
-        return new Promise ((resolve, reject) => {
-          if (this.suggestionsPropIsDefined()) {
-            if (this.isSuggestionAsync) {
-              this.suggestions.then(results => {
-                results.forEach(this.addRegister)
-                resolve(this.suggestions)
-              }).catch(e => [])
-            } else {
-              this.suggestions.forEach(this.addRegister)
-              resolve(this.suggestions)
-            }
-          } else {
-            reject()
+        return new Promise((resolve, reject) => {
+          const processResult = (results) => {
+            if (typeof results === 'undefined') return resolve()
+            results.forEach(this.addRegister)
+            resolve(results)
           }
-        })
+          if (this.isSuggestionFn) {
+            if (this.isNewSuggestionsNotNeeded()) return resolve()
+            this.getSuggestions(this.textVal, res => {
+              if (isArray(res)) {
+                processResult(res)
+              } else if (isPromise(res)) {
+                this.isLoading = true
+                res.then(results => {
+                  this.isLoading = false
+                  processResult(results)
+                })
+              } else {
+                return resolve()
+              }
+            })
+          } else {
+            processResult(this.suggestions)
+          }
+        }).then(this.handleAsyncSuggestion)
+      },
+      isNewSuggestionsNotNeeded () {
+        return this.selectedSuggest && this.selectedSuggest[this.suggestionAttribute] === this.textVal
       },
       setPlaceholderVal () {
-          const suggest = this.getSuggest();
-          if (suggest) this.placeholderVal = this.letterProcess(suggest[this.suggestionAttribute])
+        const suggest = this.getSuggest();
+        if (suggest) this.placeholderVal = this.letterProcess(suggest[this.suggestionAttribute])
       },
       setTextVal () {
         const suggest = this.getSuggest();
@@ -322,9 +339,6 @@ export default {
       canAddToSimilarData () {
         if (this.maxLimit) return this.similiarData.length < this.maxLimit
         return true
-      },
-      suggestionsPropIsDefined () {
-        return typeof this.suggestions !== 'undefined'
       },
       notArrowKeysEvent () {
         return this.selectedEvent !== 'ArrowUp' &&
@@ -408,7 +422,7 @@ export default {
       },
       select () {
         this.emitSelected()
-        this.emitChange(this.selectedSuggest)
+        this.emitChange()
       },
       emitChange (value = this.textVal) {
         this.$emit('input', value)
