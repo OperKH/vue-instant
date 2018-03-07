@@ -4,7 +4,7 @@ export default {
     mixins: [ clickaway ],
     props: {
       'value': {
-        type: String,
+        type: [String, Object],
         required: true
       },
       'suggestions': {
@@ -94,7 +94,13 @@ export default {
       }
     },
     created () {
-      this.textVal = this.value
+      if (typeof this.value === 'string') {
+        this.textVal = this.value
+      } else if (typeof value === 'object') {
+        this.textVal = this.value[this.suggestionAttribute]
+      } else {
+        this.textVal = ''
+      }
       this.handleNewSuggestion()
     },
     methods: {
@@ -152,7 +158,7 @@ export default {
         this.setFinalTextValue()
         this.clearPlaceholder()
         this.clearSimilarData()
-        this.emitSelected()
+        this.select()
       },
       addRegister (o) {
         if (this.isSimilar(o) && this.textValIsNotEmpty()) {
@@ -174,13 +180,13 @@ export default {
       setTextValue (e) {
         if (e.target.value.trim()) {
           this.textVal = e.target.value
-          this.emitChange()
+          // this.emitChange()
         }
       },
       setFinalTextValue () {
         if (this.finalTextValueValidation()) {
           this.setPlaceholderAndTextVal()
-          this.emitChange()
+          // this.emitChange()
         } else {
           this.clearAll()
         }
@@ -191,7 +197,7 @@ export default {
           this.setTextVal()
           this.setPlaceholderVal()
           this.selectedSuggest = suggest
-          this.emitSelected()
+          this.select()
         }
       },
       onExact () {
@@ -201,7 +207,7 @@ export default {
           this.highlightedIndex = index;
           this.selectedSuggest = this.similiarData[index]
           this.clearPlaceholder()
-          this.emitSelected()
+          this.select()
           if (this.similiarData.length <= 1) {
             this.suggestionsIsVisible = false
           }
@@ -340,7 +346,7 @@ export default {
         this.clearSimilarData()
         this.clearSelectedSuggest()
         this.emitClear()
-        this.emitSelected()
+        this.select()
       },
       clearAll () {
         this.clearSelected()
@@ -380,7 +386,7 @@ export default {
       processChangeText (e) {
         if (this.notEnterKeyEvent()) {
           if (this.selectOnExact && this.onExact()) return
-          this.$emit('input', this.textVal)
+          this.emitChange()
           this.inputChanged = true
           this.suggestionsIsVisible = true
           this.clearAllAndFindSuggest()
@@ -394,14 +400,18 @@ export default {
       },
       away () {
         this.suggestionsIsVisible = false
-        // this.emitSelected()
+        // this.select()
       },
       inputClick (e) {
         this.suggestionsIsVisible = true
         this.emitClickInput(e)
       },
-      emitChange () {
-        // this.$emit('input', this.textVal)
+      select () {
+        this.emitSelected()
+        this.emitChange(this.selectedSuggest)
+      },
+      emitChange (value = this.textVal) {
+        this.$emit('input', value)
       },
       emitClickInput (event) {
         this.$emit('click-input', event)
@@ -415,8 +425,8 @@ export default {
       emitKeyUp () {
         this.$emit('key-up')
       },
-      emitKeyDown () {
-        this.$emit('key-down', this.selectedSuggest)
+      emitKeyDown (value = this.selectedSuggest) {
+        this.$emit('key-down', value)
       },
       emitKeyRight () {
         this.$emit('key-right')
@@ -427,8 +437,8 @@ export default {
       emitEscape () {
         this.$emit('escape')
       },
-      emitSelected () {
-        this.$emit('selected', this.selectedSuggest)
+      emitSelected (value = this.selectedSuggest) {
+        this.$emit('selected', value)
       }
     }
 }
