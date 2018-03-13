@@ -178,7 +178,7 @@ export default {
         if (this.canAddToSimilarData()) {
           this.selectedSuggest = o
           // this.emitSelected()
-          this.similiarData.unshift(o)
+          this.similiarData.push(o)
         }
       },
       setTextValue (e) {
