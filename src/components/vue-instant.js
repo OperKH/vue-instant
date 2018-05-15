@@ -18,6 +18,14 @@ export default {
         type: String,
         required: true
       },
+      findSimilar: {
+        type: Boolean,
+        default: true
+      },
+      allowSimilar: {
+        type: Boolean,
+        default: false
+      },
       debounce: {
         type: Number,
         default: 500
@@ -170,7 +178,7 @@ export default {
         }
       },
       addSuggestion (o) {
-        if (!this.findSuggestionTextIsRepited(o)) {
+        if (this.allowSimilar || !this.findSuggestionTextIsRepited(o)) {
           this.addToSimilarData(o)
         }
       },
@@ -303,31 +311,32 @@ export default {
             this.placeholderVal === '' && this.highlightedIndex !== 0
       },
       isSimilar (o) {
-          if (o) {
-            if ( this.suggestOnAllWords ) {
-                var isMatch = false;
-                var words = o[this.suggestionAttribute].split(" ");
-                var textValWords = this.textVal.split(" ");
-                if ( words.length > 0) {
-                  words.forEach(function(word)  {
-                      if ( textValWords.length > 0) {
-                        textValWords.forEach(function(textValWord) {
-                            if (word.toLowerCase().startsWith(textValWord.toLowerCase())) {
-                              isMatch = true;
-                            }
-                        });
-                      }
-                      else if (word.toLowerCase().startsWith(this.textVal.toLowerCase())) {
-                        isMatch = true;
-                      }
+        if (this.findSimilar === false) {
+          return true;
+        }
+        if (o) {
+          if ( this.suggestOnAllWords ) {
+            var isMatch = false;
+            var words = o[this.suggestionAttribute].split(" ");
+            var textValWords = this.textVal.split(" ");
+            if ( words.length > 0) {
+              words.forEach(function(word) {
+                if ( textValWords.length > 0) {
+                  textValWords.forEach(function(textValWord) {
+                    if (word.toLowerCase().startsWith(textValWord.toLowerCase())) {
+                      isMatch = true;
+                    }
                   });
-                  return isMatch;
-                } 
-            }
-
-           return o[this.suggestionAttribute]
-        	  .toLowerCase()
-		        .startsWith(this.textVal.toLowerCase())
+                } else if (word.toLowerCase().startsWith(this.textVal.toLowerCase())) {
+                  isMatch = true;
+                }
+              });
+              return isMatch;
+            } 
+          }
+          return o[this.suggestionAttribute]
+            .toLowerCase()
+            .startsWith(this.textVal.toLowerCase())
         }
       },
       isSameType (o) {
