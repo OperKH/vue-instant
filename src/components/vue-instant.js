@@ -80,7 +80,8 @@ export default {
       highlightedIndex: 0,
       similiarData: [],
       placeholderVal: this.placeholder,
-      isLoading: false
+      isLoading: false,
+      findSuggestsCanceler: null
     }
   },
   watch: {
@@ -248,6 +249,8 @@ export default {
     },
     findSuggests () {
       return new Promise((resolve, reject) => {
+        if (this.findSuggestsCanceler) this.findSuggestsCanceler()
+        this.findSuggestsCanceler = reject
         const processResult = (results) => {
           if (typeof results === 'undefined') return resolve()
           this.clearSimilarData()
@@ -272,7 +275,9 @@ export default {
         } else {
           processResult(this.suggestions)
         }
-      }).then(this.handleAsyncSuggestion)
+      })
+        .then(this.handleAsyncSuggestion)
+        .catch(() => null)
     },
     isNewSuggestionsNotNeeded () {
       return this.selectedSuggest && this.selectedSuggest[this.suggestionAttribute] === this.textVal
