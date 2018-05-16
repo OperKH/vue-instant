@@ -251,31 +251,31 @@ export default {
       return new Promise((resolve, reject) => {
         if (this.findSuggestsCanceler) this.findSuggestsCanceler()
         this.findSuggestsCanceler = reject
-        const processResult = (results) => {
-          if (typeof results === 'undefined') return resolve()
-          this.clearSimilarData()
-          results.forEach(this.addRegister)
-          resolve(results)
-        }
         if (this.isSuggestionFn) {
           if (this.isNewSuggestionsNotNeeded()) return resolve()
           this.getSuggestions(this.textVal, res => {
             if (isArray(res)) {
-              processResult(res)
+              resolve(res)
             } else if (isPromise(res)) {
               this.isLoading = true
               res.then(results => {
                 this.isLoading = false
-                processResult(results)
+                resolve(results)
               })
             } else {
-              return resolve()
+              resolve()
             }
           })
         } else {
-          processResult(this.suggestions)
+          resolve(this.suggestions)
         }
       })
+        .then(results => {
+          if (typeof results === 'undefined') return
+          this.clearSimilarData()
+          results.forEach(this.addRegister)
+          return results
+        })
         .then(this.handleAsyncSuggestion)
         .catch(() => null)
     },
