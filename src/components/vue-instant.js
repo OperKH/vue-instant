@@ -250,6 +250,7 @@ export default {
         return new Promise((resolve, reject) => {
           const processResult = (results) => {
             if (typeof results === 'undefined') return resolve()
+            this.clearSimilarData()
             results.forEach(this.addRegister)
             resolve(results)
           }
