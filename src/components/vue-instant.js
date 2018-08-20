@@ -148,6 +148,7 @@ export default {
       if (this.arrowDownValidation()) {
         this.incrementHighlightedIndex()
         this.setPlaceholderAndTextVal()
+        this.scrollHighlightedIntoView(false)
         this.emitKeyDown()
       }
     },
@@ -155,10 +156,22 @@ export default {
       if (this.highlightedIndex > 0) {
         this.decrementHighlightedIndex()
         this.setPlaceholderAndTextVal()
+        this.scrollHighlightedIntoView(true)
         this.emitKeyUp()
       } else {
         this.clearHighlightedIndex()
       }
+    },
+    scrollHighlightedIntoView (alignToTop) {
+      this.$nextTick(() => {
+        const highlightedEl = (this.$refs.suggestions && this.$refs.suggestions.querySelector('.sbx-searchbox__suggestion--highlighted')) || null
+        if (!highlightedEl) return
+        if (highlightedEl.scrollIntoViewIfNeeded) {
+          highlightedEl.scrollIntoViewIfNeeded(false)
+        } else {
+          highlightedEl.scrollIntoView(alignToTop)
+        }
+      })
     },
     enterAction () {
       this.setFinalTextValue()

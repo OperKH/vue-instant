@@ -18,7 +18,7 @@
         @click="inputClick" 
         @keyup='changeText' 
     >
-    <ul v-on-clickaway="away" v-if="showSuggestions" class="sbx-searchbox__suggestions">
+    <ul v-on-clickaway="away" v-if="showSuggestions" class="sbx-searchbox__suggestions" ref="suggestions">
             <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" 
                 @click="selectedAction(index)" 
                 v-for="(item, index) in similiarData"
