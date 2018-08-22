@@ -1,6 +1,6 @@
 <div class="sbx-searchbox">
     <input type="text" v-if="showPlaceholder" class="sbx-searchbox__input-placeholder" 
-        :placeholder="getPlaceholder" 
+        :value="getPlaceholder" 
         name="search" 
         autocomplete="off" 
         required="required" 
@@ -16,14 +16,15 @@
         :disabled="disabled" 
         :name="name" 
         @click="inputClick" 
-        @keyup='changeText' 
+        @keydown.enter.stop='enterAction' 
+        @keyup='changeText'
     >
     <ul v-on-clickaway="away" v-if="showSuggestions" class="sbx-searchbox__suggestions" ref="suggestions">
-            <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" 
-                @click="selectedAction(index)" 
-                v-for="(item, index) in similiarData"
-            >
-                {{item[suggestionAttribute]}}
-            </li>
-        </ul>
+        <li :class="{'sbx-searchbox__suggestion--highlighted': isHighlighted(index)}" 
+            @click="selectedAction(index)" 
+            v-for="(item, index) in similiarData"
+        >
+            {{item[suggestionAttribute]}}
+        </li>
+    </ul>
 </div>

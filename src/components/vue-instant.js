@@ -72,7 +72,7 @@ export default {
   },
   data () {
     return {
-      selectedEvent: null,
+      selectedEventRaw: null,
       selectedSuggest: null,
       inputChanged: false,
       isSuggestionFn: false,
@@ -81,7 +81,8 @@ export default {
       similiarData: [],
       placeholderVal: this.placeholder,
       isLoading: false,
-      findSuggestsCanceler: null
+      findSuggestsCanceler: null,
+      arrowKeysEvents: ['ArrowUp', 'ArrowDown', 'ArrowRight']
     }
   },
   watch: {
@@ -102,6 +103,20 @@ export default {
     },
     showSuggestions () {
       return this.showAutocomplete && this.suggestionsIsVisible && this.similiarData.length >= this.minMatch
+    },
+    selectedEvent () {
+      switch (this.selectedEventRaw) {
+        case 'Up':
+          return 'ArrowUp'
+        case 'Down':
+          return 'ArrowDown'
+        case 'Left':
+          return 'ArrowLeft'
+        case 'Right':
+          return 'ArrowRight'
+        default:
+          return this.selectedEventRaw
+      }
     }
   },
   created () {
@@ -173,7 +188,10 @@ export default {
         }
       })
     },
-    enterAction () {
+    enterAction (e) {
+      if (e) {
+        this.setTextValue(e)
+      }
       this.setFinalTextValue()
       this.clearHighlightedIndex()
       this.clearSimilarData()
@@ -369,8 +387,7 @@ export default {
       return true
     },
     notArrowKeysEvent () {
-      return this.selectedEvent !== 'ArrowUp' &&
-              this.selectedEvent !== 'ArrowDown' && this.selectedEvent !== 'ArrowRight'
+      return !this.arrowKeysEvents.includes(this.selectedEvent)
     },
     notEnterKeyEvent () {
       return this.selectedEvent !== 'Enter'
@@ -420,7 +437,7 @@ export default {
       this.highlightedIndex = 0
     },
     changeText (e) {
-      this.selectedEvent = e.code
+      this.selectedEventRaw = e.key
       this.setTextValue(e)
       this.processChangeText(e)
       this.controlEvents(e)
