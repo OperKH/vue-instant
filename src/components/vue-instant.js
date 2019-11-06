@@ -75,6 +75,7 @@ export default {
       selectedEventRaw: null,
       selectedSuggest: null,
       inputChanged: false,
+      textVal: '',
       isSuggestionFn: false,
       suggestionsIsVisible: true,
       highlightedIndex: 0,
