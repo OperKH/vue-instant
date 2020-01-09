@@ -146,7 +146,7 @@ export default {
     },
     handleAsyncSuggestion () {
       this.clearHighlightedIndex()
-      const isExact = this.onExact()
+      const isExact = this.selectOnExact && this.onExact()
       if (isExact === false && this.suggestOnAllWords === false) this.setPlaceholderVal()
     },
     escapeAction () {
